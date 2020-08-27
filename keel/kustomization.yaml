@@ -1,0 +1,50 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./keel.yaml
+- ./keel-ingress-traefik.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+namespace: keel
+
+patchesStrategicMerge:
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: keel
+    namespace: keel
+  spec:
+    type: ClusterIP
+
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: keel
+    namespace: keel
+  spec:
+    template:
+      spec:
+        containers:
+          - name: keel
+            env:
+              # Basic auth (to enable UI/API)
+              - name: BASIC_AUTH_USER
+                value: admin
+              - name: BASIC_AUTH_PASSWORD
+                value: admin
+              - name: AUTHENTICATED_WEBHOOKS
+                value: "false"
+              # Helm configuration
+              - name: SLACK_TOKEN
+                value: "xoxb-1288612153063-1309919750324-yfXYcD9VksIZPFmYBoifxQ0L"
+              - name: SLACK_CHANNELS
+                value: general
+              - name: SLACK_APPROVALS_CHANNEL
+                value: general
+              - name: SLACK_BOT_NAME
+                value: keel-bot

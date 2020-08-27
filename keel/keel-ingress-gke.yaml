@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: keel-ingress
+spec:
+  rules:
+  - host: keel.130.211.31.31.nip.io
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: keel
+          servicePort: 9300

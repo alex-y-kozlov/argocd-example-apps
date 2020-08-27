@@ -1,0 +1,210 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keel
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: keel
+  name: keel
+  namespace: keel
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: keel
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - watch
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - ""
+  - extensions
+  - apps
+  - batch
+  resources:
+  - pods
+  - replicasets
+  - replicationcontrollers
+  - statefulsets
+  - deployments
+  - daemonsets
+  - jobs
+  - cronjobs
+  verbs:
+  - get
+  - delete
+  - watch
+  - list
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods/portforward
+  verbs:
+  - get
+  - create
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: keel
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: keel
+subjects:
+- kind: ServiceAccount
+  name: keel
+  namespace: keel
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: keel
+  name: keel
+  namespace: keel
+spec:
+  ports:
+  - name: keel
+    port: 9300
+    protocol: TCP
+    targetPort: 9300
+  selector:
+    app: keel
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keel
+  name: keel
+  namespace: keel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keel
+  template:
+    metadata:
+      labels:
+        app: keel
+    spec:
+      containers:
+      - command:
+        - /bin/keel
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PROJECT_ID
+          value: ""
+        - name: PUBSUB
+          value: ""
+        - name: BASIC_AUTH_USER
+          value: admin
+        - name: BASIC_AUTH_PASSWORD
+          value: admin
+        - name: AUTHENTICATED_WEBHOOKS
+          value: "false"
+        - name: AWS_ACCESS_KEY_ID
+          value: ""
+        - name: AWS_SECRET_ACCESS_KEY
+          value: ""
+        - name: AWS_REGION
+          value: ""
+        - name: WEBHOOK_ENDPOINT
+          value: ""
+        - name: MATTERMOST_ENDPOINT
+          value: ""
+        - name: SLACK_TOKEN
+          value: xoxb-1288612153063-1309919750324-yfXYcD9VksIZPFmYBoifxQ0L
+        - name: SLACK_CHANNELS
+          value: general
+        - name: SLACK_APPROVALS_CHANNEL
+          value: general
+        - name: SLACK_BOT_NAME
+          value: keel-bot
+        - name: HIPCHAT_TOKEN
+          value: ""
+        - name: HIPCHAT_CHANNELS
+          value: ""
+        - name: HIPCHAT_APPROVALS_CHANNEL
+          value: ""
+        - name: HIPCHAT_APPROVALS_BOT_NAME
+          value: ""
+        - name: HIPCHAT_APPROVALS_USER_NAME
+          value: ""
+        - name: HIPCHAT_APPROVALS_PASSWORT
+          value: ""
+        - name: NOTIFICATION_LEVEL
+          value: info
+        - name: INSECURE_REGISTRY
+          value: "true"
+        image: keelhq/keel:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9300
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        name: keel
+        ports:
+        - containerPort: 9300
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+      serviceAccountName: keel
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: keel
+  namespace: keel
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: keel
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keel
+  namespace: keel
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: Host(`keel.34.75.101.245.nip.io`)
+    priority: 10
+    services:
+    - name: keel
+      namespace: keel
+      port: 9300
