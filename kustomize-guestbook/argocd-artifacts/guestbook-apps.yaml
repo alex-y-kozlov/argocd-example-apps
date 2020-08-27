@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: argocd-k-guestbook
+  name: argocd-guestbook
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -13,7 +13,7 @@ spec:
   - group: '*'
     kind: '*'
   destinations:
-  - namespace: 'argocd-k-guestbook'
+  - namespace: 'argocd-guestbook'
     server: '*'
   sourceRepos:
   - '*'
@@ -25,7 +25,7 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: argocd-k-guestbook
+    namespace: argocd-guestbook
     server: https://kubernetes.default.svc
   project: guestbook-proj
   source:
@@ -39,7 +39,7 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: argocd-k-guestbook
+    namespace: argocd-guestbook
     server: https://kubernetes.default.svc
   project: guestbook-proj
   source:
@@ -53,7 +53,7 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: argocd-k-guestbook
+    namespace: argocd-guestbook
     server: https://kubernetes.default.svc
   project: guestbook-proj
   source:
@@ -67,7 +67,7 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: argocd-k-guestbook
+    namespace: argocd-guestbook
     server: https://kubernetes.default.svc
   project: guestbook-proj
   source:
