@@ -30,7 +30,7 @@ spec:
   project: guestbook-proj
   source:
     path: kustomize-guestbook/k-guestbook-dev
-    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    repoURL: https://github.com/alex-y-kozlov/argocd-example-apps.git
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -44,7 +44,7 @@ spec:
   project: guestbook-proj
   source:
     path: kustomize-guestbook/k-guestbook-prod
-    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    repoURL: https://github.com/alex-y-kozlov/argocd-example-apps.git
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -58,7 +58,7 @@ spec:
   project: guestbook-proj
   source:
     path: kustomize-guestbook/k-guestbook-qa
-    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    repoURL: https://github.com/alex-y-kozlov/argocd-example-apps.git
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -72,4 +72,4 @@ spec:
   project: guestbook-proj
   source:
     path: kustomize-guestbook/k-guestbook-stage
-    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    repoURL: https://github.com/alex-y-kozlov/argocd-example-apps.git
