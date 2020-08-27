@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd-k-guestbook
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: guestbook-proj
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  destinations:
+  - namespace: 'argocd-k-guestbook'
+    server: '*'
+  sourceRepos:
+  - '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k-guestbook-dev
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd-k-guestbook
+    server: https://kubernetes.default.svc
+  project: guestbook-proj
+  source:
+    path: kustomize-guestbook/k-guestbook-dev
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k-guestbook-prod
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd-k-guestbook
+    server: https://kubernetes.default.svc
+  project: guestbook-proj
+  source:
+    path: kustomize-guestbook/k-guestbook-prod
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k-guestbook-qa
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd-k-guestbook
+    server: https://kubernetes.default.svc
+  project: guestbook-proj
+  source:
+    path: kustomize-guestbook/k-guestbook-qa
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k-guestbook-stage
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd-k-guestbook
+    server: https://kubernetes.default.svc
+  project: guestbook-proj
+  source:
+    path: kustomize-guestbook/k-guestbook-stage
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
