@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd-rollouts
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: rollouts-proj
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  destinations:
+  - namespace: 'argocd-rollouts'
+    server: '*'
+  sourceRepos:
+  - '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rollouts-realme
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd-rollouts
+    server: https://kubernetes.default.svc
+  project: rollouts-proj
+  source:
+    path: rollouts/realtime-can
+    repoURL: https://github.com/alex-y-kozlov/argocd-example-apps.git
